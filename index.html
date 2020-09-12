@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>2048</title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <script src="jquery-2.0.3.min.js"></script>
+    <script src="jquery.hammer.min.js"></script>
+</head>
+<body>
+<style>
+@import url(/fonts/clear-sans.css);
+
+body{
+    background-image: url("bg.png") !important;
+    background-size: cover;
+}
+
+.tile.tile-2 .tile-inner {
+    background-image: url("tile2.png") !important;
+    background: #eee4da;
+    background-size: cover;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0), inset 0 0 0 1px rgba(255, 255, 255, 0); }
+.tile.tile-4 .tile-inner {
+    background-image: url("tile4.png") !important;
+    background: #ede0c8;
+    background-size: cover;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0), inset 0 0 0 1px rgba(255, 255, 255,0); }
+.tile.tile-8 .tile-inner {
+    background-image: url("tile8.png") !important;
+    color: #f9f6f2;
+    background: #f2b179;
+    background-size: cover; }
+.tile.tile-16 .tile-inner {
+    background-image: url("tile16.png") !important;
+    color: #f9f6f2;
+    background: #f59563;
+    background-size: cover; }
+.tile.tile-32 .tile-inner {
+    background-image: url("tile32.png") !important;
+    color: #f9f6f2;
+    background: #f67c5f;
+    background-size: cover; }
+.tile.tile-64 .tile-inner {
+    background-image: url("tile64.png") !important;
+    color: #f9f6f2;
+    background: #f65e3b;
+    background-size: cover; }
+.tile.tile-128 .tile-inner {
+    background-image: url("tile128.png") !important;
+    color: #f9f6f2;
+    background: #edcf72;
+    background-size: cover;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.2381), inset 0 0 0 1px rgba(255, 255, 255, 0.14286,);
+    font-size: 45px; }
+@media screen and (max-width: 580px) {
+    .tile.tile-128 .tile-inner {
+        font-size: 25px; } }
+.tile.tile-256 .tile-inner {
+    background-image: url("tile256.png") !important;
+    color: #f9f6f2;
+    background-size: cover;
+    background: #edcc61;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.31746,0), inset 0 0 0 1px rgba(255, 255, 255, 0.19048,0);
+    font-size: 45px; }
+@media screen and (max-width: 580px) {
+    .tile.tile-256 .tile-inner {
+        font-size: 25px; } }
+.tile.tile-512 .tile-inner {
+    background-image: url("tile512.png") !important;
+    color: #f9f6f2;
+    background-size: cover;
+    background: #edc850;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.39683), inset 0 0 0 1px rgba(255, 255, 255, 0.2381);
+    font-size: 45px; }
+@media screen and (max-width: 580px) {
+    .tile.tile-512 .tile-inner {
+        font-size: 25px; } }
+.tile.tile-1024 .tile-inner {
+    background-image: url("tile1024.png") !important;
+    color: #f9f6f2;
+    background-size: cover;
+    background: #edc53f;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.47619), inset 0 0 0 1px rgba(255, 255, 255, 0.28571);
+    font-size: 35px; }
+@media screen and (max-width: 580px) {
+    .tile.tile-1024 .tile-inner {
+        font-size: 15px; } }
+.tile.tile-2048 .tile-inner {
+    background-image: url("tile2048.png") !important;
+    color: #f9f6f2;
+    background-size: cover;
+    background: #edc22e;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.55556), inset 0 0 0 1px rgba(255, 255, 255, 0.33333);
+    font-size: 35px; }
+@media screen and (max-width: 580px) {
+    .tile.tile-2048 .tile-inner {
+        font-size: 15px; } }
+
+</style>
+
+
+<div class="container">
+    <div class="heading">
+        <h1 class="title" id="gamename">2048</h1>
+    </div>
+
+    <div class="above-game">
+        <div class="scores-container">
+            <div class="score-container">0</div>
+            <div class="best-container">0</div>
+        </div>
+        <a class="restart-button">New Game</a>
+    </div>
+
+    <div class="game-container">
+        <div class="game-message">
+            <p></p>
+            <div class="lower">
+                <a class="keep-playing-button">Keep going</a>
+                <a class="retry-button">Try again</a>
+            </div>
+        </div>
+
+        <div class="grid-container">
+            <div class="grid-row">
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                  <div class="grid-cell"></div> 
+                <div class="grid-cell"></div>
+            </div>
+            <div class="grid-row">
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                  <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+            </div>
+            <div class="grid-row">
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                  <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+            </div>
+            <div class="grid-row">
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+            </div>
+            <div class="grid-row">
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+            </div>
+        </div>
+
+        <div class="tile-container">
+
+        </div>
+    </div>
+
+
+
+    <p style="font-size: 12px">
+        Original game created by <a href="http://" target="_blank">taha</a>
+    </p>
+</div>
+
+<script src="settings.js"></script>
+
+<script src="bind_polyfill.js"></script>
+<script src="classlist_polyfill.js"></script>
+<script src="animframe_polyfill.js"></script>
+<script src="keyboard_input_manager.js"></script>
+<script src="grid.js"></script>
+<script src="tile.js"></script>
+<script src="local_storage_manager.js"></script>
+<script src="game_manager.js"></script>
+<script src="application.js"></script>
+<script>
+
+    console.log('test');
+
+    $(document).ready(function () {
+
+        
+
+        var gamename=[{"name":"Taha"}];
+
+        $('#gamename').text(gamename[0].name);
+
+    });
+
+    function HTMLActuator() {
+        this.tileContainer    = document.querySelector(".tile-container");
+        this.scoreContainer   = document.querySelector(".score-container");
+        this.bestContainer    = document.querySelector(".best-container");
+        this.messageContainer = document.querySelector(".game-message");
+
+        this.score = 0;
+    }
+
+
+    HTMLActuator.prototype.addTile = function (tile) {
+
+        
+
+        var tiletext=[{"text2":"","text4":"","text8":"","text16":"","text32":"","text64":"","text128":"","text256":"","text512":"","text1024":"","text2048":""}];
+
+        var self = this;
+
+        var wrapper   = document.createElement("div");
+        var inner     = document.createElement("div");
+        var innertext = document.createElement("span");
+        var position  = tile.previousPosition || { x: tile.x, y: tile.y };
+        var positionClass = this.positionClass(position);
+
+        // We can't use classlist because it somehow glitches when replacing classes
+        var classes = ["tile", "tile-" + tile.value, positionClass];
+
+        if (tile.value > 2048) classes.push("tile-super");
+
+        this.applyClasses(wrapper, classes);
+
+        inner.classList.add("tile-inner");
+        innertext.classList.add("tile-inner-text");
+
+        if(tile.value==2){
+            if (tiletext[0].text2==""){
+                innertext.textContent=tile.value;
+            }else{
+                innertext.textContent = tiletext[0].text2;
+            }
+        }
+        if(tile.value==4){
+            if (tiletext[0].text4==""){
+                innertext.textContent=tile.value;
+            }else{
+                innertext.textContent = tiletext[0].text4;
+            }
+        }
+        if(tile.value==8){
+            if (tiletext[0].text8==""){
+                innertext.textContent=tile.value;
+            }else{
+                innertext.textContent = tiletext[0].text8;
+            }
+        }
+        if(tile.value==16){
+            if (tiletext[0].text16==""){
+                innertext.textContent=tile.value;
+            }else{
+                innertext.textContent = tiletext[0].text16;
+            }
+        }
+        if(tile.value==32){
+            if (tiletext[0].text32==""){
+                innertext.textContent=tile.value;
+            }else{
+                innertext.textContent = tiletext[0].text32;
+            }
+        }
+        if(tile.value==64){
+            if (tiletext[0].text64==""){
+                innertext.textContent=tile.value;
+            }else{
+                innertext.textContent = tiletext[0].text64;
+            }
+        }
+        if(tile.value==128){
+            if (tiletext[0].text128==""){
+                innertext.textContent=tile.value;
+            }else{
+                innertext.textContent = tiletext[0].text128;
+            }
+        }
+        if(tile.value==256){
+            if (tiletext[0].text256==""){
+                innertext.textContent=tile.value;
+            }else{
+                innertext.textContent = tiletext[0].text256;
+            }
+        }
+        if(tile.value==512){
+            if (tiletext[0].text512==""){
+                innertext.textContent=tile.value;
+            }else{
+                innertext.textContent = tiletext[0].text512;
+            }
+        }
+        if(tile.value==1024){
+            if (tiletext[0].text1024==""){
+                innertext.textContent=tile.value;
+            }else{
+                innertext.textContent = tiletext[0].text1024;
+            }
+        }
+        if(tile.value==2048){
+            if (tiletext[0].text2048==""){
+                innertext.textContent=tile.value;
+            }else{
+                innertext.textContent = tiletext[0].text2048;
+            }
+        }
+        if(tile.value>2048){
+            innertext.textContent=tile.value;
+        }
+
+
+
+
+
+//            while ( $( line ).width() > width ) {
+//                $( '.tile-inner' ).css( 'font-size', --n );
+//            }
+
+
+
+
+        if (tile.previousPosition) {
+            // Make sure that the tile gets rendered in the previous position first
+            window.requestAnimationFrame(function () {
+                classes[2] = self.positionClass({ x: tile.x, y: tile.y });
+                self.applyClasses(wrapper, classes); // Update the position
+            });
+        } else if (tile.mergedFrom) {
+            classes.push("tile-merged");
+            this.applyClasses(wrapper, classes);
+
+            // Render the tiles that merged
+            tile.mergedFrom.forEach(function (merged) {
+                self.addTile(merged);
+            });
+        } else {
+            classes.push("tile-new");
+            this.applyClasses(wrapper, classes);
+        }
+
+        // Add the inner part of the tile to the wrapper
+        wrapper.appendChild(inner);
+        inner.appendChild(innertext);
+
+        // Put the tile on the board
+        this.tileContainer.appendChild(wrapper);
+
+        $( '.tile-inner-text' ).each(function ( i, box ) {
+
+            while( $( box ).height() > $( '.tile-inner' ).height() ) {
+                $( box ).css('font-size', (parseInt($( box ).css('font-size')) - 1) + "px" );
+            }
+
+        });
+
+
+
+    };
+
+
+    HTMLActuator.prototype.actuate = function (grid, metadata) {
+        var self = this;
+
+        window.requestAnimationFrame(function () {
+            self.clearContainer(self.tileContainer);
+
+            grid.cells.forEach(function (column) {
+                column.forEach(function (cell) {
+                    if (cell) {
+                        self.addTile(cell);
+                    }
+                });
+            });
+
+            self.updateScore(metadata.score);
+            self.updateBestScore(metadata.bestScore);
+
+            if (metadata.terminated) {
+                if (metadata.over) {
+                    self.message(false); // You lose
+                } else if (metadata.won) {
+                    self.message(true); // You win!
+                }
+            }
+
+        });
+    };
+
+    // Continues the game (both restart and keep playing)
+    HTMLActuator.prototype.continueGame = function () {
+        this.clearMessage();
+    };
+
+    HTMLActuator.prototype.clearContainer = function (container) {
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
+        }
+    };
+
+
+    HTMLActuator.prototype.applyClasses = function (element, classes) {
+        element.setAttribute("class", classes.join(" "));
+    };
+
+    HTMLActuator.prototype.normalizePosition = function (position) {
+        return { x: position.x + 1, y: position.y + 1 };
+    };
+
+    HTMLActuator.prototype.positionClass = function (position) {
+        position = this.normalizePosition(position);
+        return "tile-position-" + position.x + "-" + position.y;
+    };
+
+    HTMLActuator.prototype.updateScore = function (score) {
+        this.clearContainer(this.scoreContainer);
+
+        var difference = score - this.score;
+        this.score = score;
+
+        this.scoreContainer.textContent = this.score;
+
+        if (difference > 0) {
+            var addition = document.createElement("div");
+            addition.classList.add("score-addition");
+            addition.textContent = "+" + difference;
+
+            this.scoreContainer.appendChild(addition);
+        }
+    };
+
+    HTMLActuator.prototype.updateBestScore = function (bestScore) {
+        this.bestContainer.textContent = bestScore;
+    };
+
+    HTMLActuator.prototype.message = function (won) {
+        var type    = won ? "game-won" : "game-over";
+        var message = won ? "You win!" : "Game over!";
+
+        this.messageContainer.classList.add(type);
+        this.messageContainer.getElementsByTagName("p")[0].textContent = message;
+    };
+
+    HTMLActuator.prototype.clearMessage = function () {
+        // IE only takes one value to remove at a time.
+        this.messageContainer.classList.remove("game-won");
+        this.messageContainer.classList.remove("game-over");
+    };
+
+
+
+
+</script>
+</body>
+</html>
